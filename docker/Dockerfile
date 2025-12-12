@@ -20,6 +20,6 @@ COPY docker/run_all.sh docker/set_env_secrets.sh ./
 RUN sed -i 's/\r$//' run_all.sh set_env_secrets.sh && \
     chmod +x run_all.sh set_env_secrets.sh
 
-EXPOSE 8014
+EXPOSE 8000
 
 ENTRYPOINT ["./run_all.sh"]
