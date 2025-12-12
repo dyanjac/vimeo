@@ -1,25 +1,17 @@
 FROM python:3.11-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
 WORKDIR /app
 
-# Instalar dependencias
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copiar el código fuente
-COPY main.py .
+# Copia el código real (está en /app/app)
+COPY app ./app
 
-# Copiar scripts desde la carpeta docker/
-COPY docker/run_all.sh docker/set_env_secrets.sh ./
-
-# Arreglar saltos de línea de Windows y dar permisos de ejecución
-RUN sed -i 's/\r$//' run_all.sh set_env_secrets.sh && \
-    chmod +x run_all.sh set_env_secrets.sh
+# (si usas scripts)
+COPY docker/run_all.sh ./run_all.sh
+COPY docker/set_env_secrets.sh ./set_env_secrets.sh
+RUN chmod +x ./run_all.sh ./set_env_secrets.sh
 
 EXPOSE 8000
-
-ENTRYPOINT ["./run_all.sh"]
+CMD ["sh","-c","uvicorn app.main:app --host 0.0.0.0 --port 8000"]
